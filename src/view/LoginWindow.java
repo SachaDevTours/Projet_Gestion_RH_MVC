@@ -1,10 +1,15 @@
 /**
  * 
  */
-package Authentification;
+package view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import controller.EtudiantController;
+import repository.EtudiantDAO;
+import repository.EtudiantRepository;
+import service.EtudiantService;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,10 +17,6 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import Model.model;
-import View.view;
-import Controller.controller;
-
 
 public class LoginWindow extends JFrame {
     private JTextField usernameField;
@@ -95,14 +96,12 @@ public class LoginWindow extends JFrame {
     }
 
     private void startApplication() {
-        model model = new model(null);
-
-        DefaultTableModel tableModel = model.getEtudiantTableData();
-        view view = new view(tableModel);
-
-        controller controller = new controller();
-        //controller.startApplication();
+        EtudiantRepository etudiantRepository = new EtudiantDAO();
+        EtudiantService etudiantService = new EtudiantService(etudiantRepository);
+        EtudiantView etudiantView = new EtudiantView(etudiantService.getEtudiantTableData());
+        EtudiantController etudiantController = new EtudiantController(etudiantService, etudiantView);
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -112,4 +111,5 @@ public class LoginWindow extends JFrame {
         });
     }
 }
+
 

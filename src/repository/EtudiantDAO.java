@@ -1,11 +1,7 @@
-/**
- * 
- */
-package Model;
+package repository;
 
-/**
- * 
- */
+import model.Etudiant;
+
 import javax.swing.table.DefaultTableModel;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,15 +9,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import View.view;
 
-
-public class model {
-	private View.view view;
+public class EtudiantDAO implements EtudiantRepository {
     private Connection connection;
-    public model(View.view view) {
-    	this.view = view;
+
+    public EtudiantDAO() {
         try {
+            // Assurez-vous d'ajuster les détails de connexion à votre base de données
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/etudiant", "root", "");
         } catch (Exception e) {
             e.printStackTrace();
@@ -29,12 +23,13 @@ public class model {
         }
     }
 
+    @Override
     public DefaultTableModel getEtudiantTableData() {
         DefaultTableModel tableModel = new DefaultTableModel() {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 if (columnIndex == 0) {
-                    return Boolean.class; 
+                    return Boolean.class;
                 }
                 return super.getColumnClass(columnIndex);
             }
@@ -72,21 +67,9 @@ public class model {
         return tableModel;
     }
 
+    @Override
     public void updateEtudiant(int id, String nom, String prenom, String dateNaissance, String email, String matricule) {
         try {
-        	nom = view.getNom();
-        	//prenom = view.getPrenom();
-        	//dateNaissance = view.getDateNaissance();
-        	//email = view.getEmail();
-        	//matricule = view.getMatricule();
-
-        	System.out.println("ID: " + id);
-        	System.out.println("Nom: " + nom);
-        	System.out.println("Prénom: " + prenom);
-        	System.out.println("Date de Naissance: " + dateNaissance);
-        	System.out.println("Email: " + email);
-        	System.out.println("Matricule: " + matricule);
-            // Construire la requête SQL en utilisant des paramètres conditionnels
             StringBuilder queryBuilder = new StringBuilder("UPDATE etudiants SET");
             ArrayList<Object> parameters = new ArrayList<>();
             boolean hasUpdates = false;
@@ -122,7 +105,6 @@ public class model {
             }
 
             if (hasUpdates) {
-                
                 int length = queryBuilder.length();
                 if (queryBuilder.charAt(length - 1) == ',') {
                     queryBuilder.deleteCharAt(length - 1);
@@ -132,7 +114,6 @@ public class model {
                 parameters.add(id);
 
                 String query = queryBuilder.toString();
-                System.out.println("Requête SQL : " + query); 
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
 
                 for (int i = 0; i < parameters.size(); i++) {
@@ -155,8 +136,7 @@ public class model {
         }
     }
 
-
-
+    @Override
     public boolean deleteEtudiant(int id) {
         try {
             String query = "DELETE FROM etudiants WHERE id=?";
@@ -171,6 +151,7 @@ public class model {
         }
     }
 
+    @Override
     public void addEtudiant(String nom, String prenom, String dateNaissance, String email, String matricule) {
         try {
             String query = "INSERT INTO etudiants (nom, prenom, date_naissance, email, matricule) VALUES (?, ?, ?, ?, ?)";
@@ -187,5 +168,3 @@ public class model {
         }
     }
 }
-
-
